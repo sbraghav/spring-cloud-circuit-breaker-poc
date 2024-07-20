@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: customer
+server:
+  port: '8081'
+resilience4j:
+  retry:
+    configs:
+      default:
+        exponentialBackoffMultiplier: '2'
+        maxAttempts: '4'
+        waitDuration: '10000'
+        enableExponentialBackoff: 'true'
+    instances:
+      emailRetry:
+        baseConfig: default
+  circuitbreaker:
+    configs:
+      default:
+        failureRateThreshold: '50'
+        waitDurationInOpenState: PT30S
+        permittedNumberOfCallsInHalfOpenState: '3'
+        automaticTransitionFromOpenToHalfOpenEnabled: 'true'
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: '4'
+        slidingWindowSize: '6'
+        registerHealthIndicator: 'true'
+    instances:
+      emailCircuitBreaker:
+        baseConfig: default
+management:
+  health:
+    circuitbreakers:
+      enabled: 'true'
+  endpoint:
+    health:
+      show-details: always
+
